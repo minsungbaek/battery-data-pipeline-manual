@@ -17,7 +17,7 @@ type first, then run the Stage 1 + Stage 2 summary notebook.
 | `stage1_extractor.py` | Extracts per-cell Stage 1 feature tables. |
 | `stage2_aggregator.py` | Builds lot-level Stage 2 summaries and Excel outputs. |
 | `feature_transformations.py` | Robust feature scaling and bad-cell flagging. |
-| `lli_lam_io.py` | Parquet-first, pickle-fallback intermediate table I/O. |
+| `pipeline_io.py` | Parquet-first, pickle-fallback intermediate table I/O. |
 | `selected_features.yaml` | Optional curated feature lists for notebooks and audits. |
 | `config.example.json` | Example local configuration. |
 | `requirements.txt` | Python dependencies. |
