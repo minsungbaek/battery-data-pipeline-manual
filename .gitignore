@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Local battery data and generated outputs
+*.nda
+*.ndax
+*.xls
+*.xlsx
+*.xlsm
+*.pkl
+*.parquet
+*.stage1ready.pkl
+.stage1cache_*
+stage1_*/
+stage2_*.xlsx
+stage2_*.parquet
+stage2_*.pkl
+feature_scales_*.json
+DOE*/
+*_papermill_out/
+
+# Local environment files
+.env
+.venv/
+venv/
