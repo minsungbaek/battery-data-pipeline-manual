@@ -15,15 +15,16 @@ by experiment. A fully automated batch version can be maintained separately.
 | File | Purpose |
 | --- | --- |
 | `Cycling_Processor.ipynb` | Manual cycling NDA processing into Excel and `.stage1ready.pkl`. |
+| `Cycling_Processor_2.ipynb` | Candidate refactor of the cycling notebook with reusable helpers moved into `cycling_processor_utils.py`. |
 | `HT_Storage_Processor.ipynb` | Manual high-temperature storage processing into Excel and `.stage1ready.pkl`. |
 | `Rate_Capability_Processor.ipynb` | Manual rate-capability processing into Excel and `.stage1ready.pkl`. |
 | `stage1_2_pipeline.ipynb` | Manual Stage 1 extraction and Stage 2 DOE summary workflow. |
+| `cycling_processor_utils.py` | Helper functions used by `Cycling_Processor_2.ipynb`; the Excel-writing flow remains in the notebook. |
 | `stage1_extractor.py` | Extracts per-cell Stage 1 feature tables. |
 | `stage2_aggregator.py` | Builds lot-level Stage 2 summaries and Excel outputs. |
 | `feature_transformations.py` | Robust feature scaling and bad-cell flagging. |
 | `pipeline_io.py` | Parquet-first, pickle-fallback intermediate table I/O. |
-| `selected_features.yaml` | Optional curated feature lists for notebooks and audits. |
-| `config.example.json` | Example local configuration. |
+| `selected_features.yaml` | Curated feature reference used to review Stage 1/Stage 2 feature choices and downstream target definitions. |
 | `requirements.txt` | Python dependencies. |
 
 ## Manual Workflow
@@ -86,6 +87,13 @@ python -m pip install -r requirements.txt
 
 For parquet output, `pyarrow` is recommended. If parquet support is unavailable,
 the pipeline automatically falls back to pickle.
+
+## Feature Reference
+
+`selected_features.yaml` documents the curated feature groups, excluded columns,
+bad-cell thresholds, and default target columns used when reviewing Stage 1 and
+Stage 2 outputs. It is intentionally kept separate from the notebooks so feature
+selection decisions can be audited without editing notebook code.
 
 ## Public Data Policy
 
