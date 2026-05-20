@@ -1,0 +1,67 @@
+# Curated feature lists for optional downstream selection.
+#
+# The Stage 1 extractor defines the canonical INPUT/OUTPUT schema used by the
+# main pipeline. This file is a lightweight external reference for notebooks,
+# audits, or future feature-selection workflows.
+
+version: "v1"
+created_for: "general battery DOE pipeline"
+
+cycling:
+  features:
+    - "discharge_capacity_ex1_f_endm1cyc"
+    - "discharge_capacity_ex1_df_dcyc_1_endm1"
+    - "discharge_capacity_ex1_abruptness"
+    - "v_slippage_ex1_df_dcyc_1_endm1"
+    - "cum_ce_loss_ex1_f_endm1cyc"
+    - "v_polarization_ex1_df_dcyc_1_endm1"
+    - "f_end | SOC50 | DCIR0"
+    - "f_end | SOC50 | DCIRt"
+    - "delta_1_to_end | SOC50 | DCIR | pct"
+    - "delta_1_to_end | C10 | Discharge Capacity | pct"
+    - "delta_1_to_end | Kinetic Fading (%)"
+    - "f_1 | C10 | Discharge Capacity"
+    - "f_1 | SOC50 | DCIR0"
+    - "ce_ex1_avg_1_25"
+
+ht_storage:
+  features:
+    - "2w_remaining_cap_loss_per_day_pct"
+    - "4w_remaining_cap_loss_per_day_pct"
+    - "2w_recovered_cap_loss_per_day_pct"
+    - "4w_recovered_cap_loss_per_day_pct"
+    - "2w_DCIR_growth_per_day_pct"
+    - "4w_DCIR_growth_per_day_pct"
+    - "2w_ACR_growth_per_day_pct"
+    - "4w_ACR_growth_per_day_pct"
+    - "2w_terrace_thickness_growth_per_day_pct"
+    - "4w_terrace_thickness_growth_per_day_pct"
+
+rate_cap:
+  features:
+    - "rate_cap_ratio_3C_vs_0.5C"
+    - "rate_cap_voltage_drop_3C_vs_0.5C_V"
+    - "rate_cap_voltage_drop_5C_vs_0.5C_V"
+    - "rate_cap_trapped_Li_fraction_after_5C"
+    - "rate_cap_ratio_5C_vs_0.5C"
+
+exclude:
+  exact:
+    - "f_end | C10 | Map Corrected Cycle"
+    - "Final 1C Cycle Number"
+    - "Final 1C Cycle Number - 50"
+    - "f_1 | C10 | Energy Efficiency %"
+    - "f_1 | C10 | RCE"
+
+bad_cell_detection:
+  z_threshold: 5.0
+  extreme_count_threshold: 10
+
+targets_by_test:
+  cycling:
+    - "f_end | C10 | Map Corrected Cycle"
+    - "f_end | C10 | Discharge Capacity"
+  ht_storage:
+    - "4w_remaining_cap_loss_per_day_pct"
+  rate_cap:
+    - "rate_cap_ratio_5C_vs_0.5C"
