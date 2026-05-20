@@ -1,4 +1,4 @@
-﻿"""
+"""
 stage1_extractor.py
 ===================
 
@@ -24,7 +24,7 @@ Feature spec
     OUTPUT (1):  rate_cap_ratio_5C_vs_0.5C
 
 - Formation:
-    INPUT  (7):  formation discharge cap (mAh/cmÂ² with electrode_area input),
+    INPUT  (7):  formation discharge cap (mAh/cm^2 with electrode_area input),
                  ACR, first CE (precycle C/10), formation CE (C/3),
                  DCIR0, DCIRt, DCIR_total
 
@@ -45,7 +45,7 @@ from pipeline_io import save_intermediate
 
 
 # ---------------------------------------------------------------------------
-# (0) xlsx-parse cache  â€” avoid re-parsing the same heavy xlsx on every rerun
+# (0) xlsx-parse cache  - avoid re-parsing the same heavy xlsx on every rerun
 # ---------------------------------------------------------------------------
 #
 # Each call stores the parsed dataframe at <xlsx_dir>/.stage1cache_<xlsx>_<sheet>.pkl
@@ -63,7 +63,7 @@ def _read_xlsx_cached(xlsx_path: str, sheet_name=None, header=None,
     Read an xlsx sheet with disk caching.  Returns a pandas DataFrame.
 
     Cache lives next to the xlsx as a hidden .pkl. Invalidates if xlsx mtime
-    changes.  Uses pickle (always works without pyarrow) â€” small files anyway.
+    changes.  Uses pickle (always works without pyarrow) - small files anyway.
     """
     xlsx_path = Path(xlsx_path)
     sheet_tok = _safe_token(sheet_name if sheet_name is not None else 'default')
@@ -123,7 +123,7 @@ CYCLING_OUTPUT_FEATURES = [
     # so it matches the corrected lifetime metric the user reports.
     # Column name 'f_end | C10 | Map Corrected Cycle' = absolute cycle index at EOL.
     'f_end | C10 | Map Corrected Cycle',
-    # Slopes in '% / cycle' â€” invariant to cell format / electrode area
+    # Slopes in '% / cycle' - invariant to cell format / electrode area
     'cycle_life_ex1_df_dcyc_1_50',
     'cycle_life_ex1_df_dcyc_1_endm1',
     'cycle_life_ex1_abruptness',
@@ -135,7 +135,7 @@ def extract_cycling(xlsx_path: str, raw_data_sheet: str = 'raw_data') -> pd.Data
     Cycling test extractor.
 
     Accepts either of two xlsx formats:
-      (A) Notebook 1 output (`Single Point DCIR Chart` direct output)
+      (A) Cycling processor direct output
           -> has `summary_features_ex1` + `summary_features_c10` sheets.
              We merge them on (Barcode, Electrolyte).
       (B) Notebook 2 output (`feature_outlier_removal_heatmap`)
@@ -145,7 +145,7 @@ def extract_cycling(xlsx_path: str, raw_data_sheet: str = 'raw_data') -> pd.Data
 
     Returns dataframe with columns ['Barcode','Electrolyte', <10 input>, <3 output>].
     """
-    # FAST PATH â€” if Notebook 1 saved a `.stage1ready.pkl` next to the xlsx,
+    # FAST PATH - if Notebook 1 saved a `.stage1ready.pkl` next to the xlsx,
     # skip the heavy xlsx parse entirely.
     pkl_path = Path(xlsx_path).with_suffix('').as_posix() + '.stage1ready.pkl'
     if os.path.exists(pkl_path):
@@ -159,7 +159,7 @@ def extract_cycling(xlsx_path: str, raw_data_sheet: str = 'raw_data') -> pd.Data
                 df = sx1.merge(sc10, on=['Barcode', 'Electrolyte'], how='outer',
                                suffixes=('', '__dup'))
                 df = df[[c for c in df.columns if not c.endswith('__dup')]]
-                print(f"[cycling] FAST PATH â€” loaded {Path(pkl_path).name} directly")
+                print(f"[cycling] FAST PATH - loaded {Path(pkl_path).name} directly")
                 fmt_used = "stage1ready_pkl"
             else:
                 df = None
@@ -223,7 +223,7 @@ def extract_cycling(xlsx_path: str, raw_data_sheet: str = 'raw_data') -> pd.Data
 
 
 # ---------------------------------------------------------------------------
-# (B) HT storage extractor â€” per-day normalized rates
+# (B) HT storage extractor - per-day normalized rates
 # ---------------------------------------------------------------------------
 
 HT_STORAGE_INPUT_FEATURES  = [
@@ -270,9 +270,9 @@ def extract_ht_storage(xlsx_path: str,
 
     `thickness_xlsx_path` (optional): if format (2) is used and the user wants
     terrace-thickness growth too, point this at the multi-level summary file
-    and we'll merge that one column in.  Default None â†’ thickness = NaN.
+    and we'll merge that one column in.  Default None -> thickness = NaN.
     """
-    # FAST PATH â€” if a `.stage1ready.pkl` exists next to the xlsx (e.g., made by
+    # FAST PATH - if a `.stage1ready.pkl` exists next to the xlsx (e.g., made by
     # HT_Storage_Processor.ipynb), load that pre-computed summary directly.
     pkl_path = Path(xlsx_path).with_suffix('').as_posix() + '.stage1ready.pkl'
     if os.path.exists(pkl_path):
@@ -292,7 +292,7 @@ def extract_ht_storage(xlsx_path: str,
                 def _g(col):
                     return pd.to_numeric(ht_df[col], errors='coerce') if col in ht_df.columns else pd.Series(np.nan, index=ht_df.index)
 
-                # ---- Format 1 (NEW) â€” HT_Storage_Processor.ipynb v2: already per-day ----
+                # ---- Format 1 (NEW) - HT_Storage_Processor.ipynb v2: already per-day ----
                 fmt_v2 = '2w_remaining_cap_loss_per_day_pct' in ht_df.columns
                 if fmt_v2:
                     feat_cols = [
@@ -318,7 +318,7 @@ def extract_ht_storage(xlsx_path: str,
                     rec4 = _g('Recovered capacity% after 1 month')
                     dci4 = _g('DCIR Growth (%) after 1 month')
 
-                    # thickness â€” match either "after 2 weeks/1 month" (HT_Storage_Processor v3)
+                    # thickness - match either "after 2 weeks/1 month" (HT_Storage_Processor v3)
                     # or "4-week/4 week" (older multi-level summary)
                     def _find(substrs_all):
                         for col in ht_df.columns:
@@ -348,7 +348,7 @@ def extract_ht_storage(xlsx_path: str,
                     out['4w_ACR_growth_per_day_pct']                = acr4 / days_4w
 
                 out = out[out['Barcode'].astype(str).str.match(r'^B\d+', na=False)].reset_index(drop=True)
-                print(f"[ht_storage] FAST PATH â€” loaded {Path(pkl_path).name} ({'v2 pre-computed' if fmt_v2 else 'v1 raw'})")
+                print(f"[ht_storage] FAST PATH - loaded {Path(pkl_path).name} ({'v2 pre-computed' if fmt_v2 else 'v1 raw'})")
                 return out
         except Exception as e:
             print(f"[ht_storage] stage1ready.pkl unreadable ({e}); falling back to xlsx")
@@ -434,7 +434,7 @@ def extract_ht_storage(xlsx_path: str,
     out['4w_recovered_cap_loss_per_day_pct'] = (100.0 - rec4) / days_4w
     out['4w_DCIR_growth_per_day_pct']         = dci4 / days_4w
     out['4w_terrace_thickness_growth_per_day_pct'] = th4 / days_4w
-    # New optional features â€” fill NaN if not present in this xlsx format
+    # New optional features - fill NaN if not present in this xlsx format
     if '2w_terrace_thickness_growth_per_day_pct' not in out.columns:
         out['2w_terrace_thickness_growth_per_day_pct'] = np.nan
     if '2w_ACR_growth_per_day_pct' not in out.columns:
@@ -475,7 +475,7 @@ DEFAULT_RATE_LAST_CYCLE = {
     '4C':   25,
     '5C':   30,
 }
-DEFAULT_RECOVERY_CYCLE = 31  # first 0.5C cycle after 5C block â€” trapped-Li signal
+DEFAULT_RECOVERY_CYCLE = 31  # first 0.5C cycle after 5C block - trapped-Li signal
 
 
 def extract_rate_cap(xlsx_path: str,
@@ -486,7 +486,7 @@ def extract_rate_cap(xlsx_path: str,
     Per-cell rate capability extractor.
 
     FAST PATH: if a `.stage1ready.pkl` exists next to the xlsx (created by
-    `Rate_Capability_Processor.ipynb`), load it directly â€” skips heavy parsing.
+    `Rate_Capability_Processor.ipynb`), load it directly - skips heavy parsing.
 
     Otherwise: reads the per-cell sheets in the source workbook
     file and computes the 5 features using fixed cycle indices.
@@ -500,7 +500,7 @@ def extract_rate_cap(xlsx_path: str,
                 payload = pickle.load(f)
             df = payload.get('rate_cap_summary')
             if df is not None and 'Barcode' in df.columns and 'Electrolyte' in df.columns:
-                print(f"[rate_cap] FAST PATH â€” loaded {Path(pkl_path).name} directly")
+                print(f"[rate_cap] FAST PATH - loaded {Path(pkl_path).name} directly")
                 return df.copy()
         except Exception as e:
             print(f"[rate_cap] stage1ready.pkl unreadable ({e}); falling back to xlsx")
@@ -513,7 +513,7 @@ def extract_rate_cap(xlsx_path: str,
         # Common cause: user pointed at the rate_cap_output.xlsx (Processor's
         # OUTPUT) which lacks cell_codes/per-cell sheets. Return an empty df
         # so Stage 2 can continue without rate_cap features.
-        print(f"[rate_cap] WARNING â€” '{cell_codes_sheet}' sheet missing in "
+        print(f"[rate_cap] WARNING - '{cell_codes_sheet}' sheet missing in "
               f"{Path(xlsx_path).name}.\n            "
               f"Rate-cap features will be SKIPPED for this DOE.\n            "
               f"To recover them: regenerate the .stage1ready.pkl by running "
@@ -598,7 +598,7 @@ def extract_formation(xlsx_path: str,
     Formation summary extractor.
 
     `electrode_area_cm2` must be supplied by the user (input box in the Stage-2
-    notebook) so that the cap-check discharge capacity is converted to mAh/cmÂ².
+    notebook) so that the cap-check discharge capacity is converted to mAh/cm^2.
 
     `barcode_filter_regex` (optional): if the formation summary contains cells
     from multiple DOEs, provide a regex to select just this DOE's cells.
@@ -608,11 +608,11 @@ def extract_formation(xlsx_path: str,
         Barcode, EL ID,
         PRE_c1_CE (%)               -> formation_first_CE_pct_precycle_C10
         CAP_c1_CE (%)               -> formation_CE_pct_C3
-        CAP_c1_dchg_cap (Ah)        -> areal cap (Ã— 1000 / area_cmÂ²)
+        CAP_c1_dchg_cap (Ah)        -> areal cap (- 1000 / area_cm^2)
         dcir0 (mOhms)               -> formation_DCIR0_mOhm
         dcirt (mOhms)               -> formation_DCIRt_mOhm
         dcir  (mOhms)               -> formation_DCIR_total_mOhm
-        (no explicit ACR column â†’ set NaN, optionally use 'dcir0 1C' as proxy)
+        (no explicit ACR column -> set NaN, optionally use 'dcir0 1C' as proxy)
     """
     df = _read_xlsx_cached(xlsx_path, sheet_name=sheet_name)
     df.columns = [str(c).strip() for c in df.columns]

@@ -11,7 +11,7 @@ makes "1 % change in CE" comparable in magnitude to "10 % change in capacity"
 because the same z-magnitude reflects the same *population significance*.
 
 Robust statistics (median + IQR) are used instead of mean + std because:
-    - small N (~50–500 cells) is sensitive to outliers in std
+    - small N (~50-500 cells) is sensitive to outliers in std
     - many battery features have skewed / heavy-tailed distributions
     - IQR-based standardization is monotone and preserves rank-order
 
@@ -41,10 +41,10 @@ FEATURE_CLASSES = [
     'rate_pct_per_cyc',   # rate %/cycle
     'delta_pct',          # already a percentage delta
     'slope',              # rate in raw units/cycle
-    'ce_rce',             # bounded near 100 — use HI1
-    'energy_efficiency',  # bounded near 90 — log(1 − x/100)
+    'ce_rce',             # bounded near 100 - use HI1
+    'energy_efficiency',  # bounded near 90 - log(1 - x/100)
     'resistance',         # log-normal: DCIR, ACR, R_ch, R_disch
-    'voltage_small',      # small drift in V — V_slip, V_pol
+    'voltage_small',      # small drift in V - V_slip, V_pol
     'voltage_abs',        # absolute mean voltage
     'capacity_or_energy', # raw mAh or mWh
     'default',            # unknown
@@ -74,7 +74,7 @@ def classify_feature(name: str) -> str:
         return 'delta_pct'
     if 'df_dcyc' in n or 'df_d_cyc' in n:
         return 'slope'
-    # CE / RCE — careful, must NOT match 'cycle_life' or 'cum_*ce*loss'
+    # CE / RCE - careful, must NOT match 'cycle_life' or 'cum_*ce*loss'
     if (re.search(r'(^|_)ce_', n) or re.search(r'_ce(_|$)', n) or
         'rce' in n or 'coulombic_efficiency' in n):
         return 'ce_rce'
@@ -113,7 +113,7 @@ def hi1_transform(x):
 
 def log_one_minus_eff(x):
     """
-    For energy efficiency near 100 %: log(1 − x/100) → spreads inefficiency.
+    For energy efficiency near 100 %: log(1 - x/100) -> spreads inefficiency.
     """
     x = pd.to_numeric(x, errors='coerce')
     val = 1.0 - np.clip(x / 100.0, -np.inf, 1.0 - 1e-9)
@@ -183,7 +183,7 @@ def robust_zscore(s: pd.Series, center: str = 'median', scale: str = 'iqr',
     if scale == 'iqr':
         sc = s.quantile(0.75) - s.quantile(0.25)
         if iqr_to_sigma:
-            sc = sc / 1.349  # Gaussian: IQR ≈ 1.349 σ
+            sc = sc / 1.349  # Gaussian: IQR ~ 1.349 sigma
     else:
         sc = s.std()
 
@@ -266,17 +266,17 @@ def flag_bad_cells(transformed_df: pd.DataFrame,
 
 
 # ---------------------------------------------------------------------------
-# (D) FeatureScaler — sklearn-style fit/transform with saveable parameters
+# (D) FeatureScaler - sklearn-style fit/transform with saveable parameters
 # ---------------------------------------------------------------------------
 
 class FeatureScaler:
     """
     Per-feature linearizing transform + robust z-score with FROZEN scale.
 
-    Why frozen?  If we recompute the IQR on every new DOE, then '+2σ' on this
-    DOE means something different from '+2σ' on the next DOE.  The whole point
+    Why frozen?  If we recompute the IQR on every new DOE, then '+2sigma' on this
+    DOE means something different from '+2sigma' on the next DOE.  The whole point
     is to be able to *accumulate* normalized data across DOEs and have the
-    σ-unit mean the same physical magnitude.
+    sigma-unit mean the same physical magnitude.
 
     Use:
         scaler = FeatureScaler()
@@ -378,7 +378,7 @@ class FeatureScaler:
             if c in id_cols:
                 continue
             if c not in self.params:
-                # feature not in saved scaler — leave it untouched but flag it
+                # feature not in saved scaler - leave it untouched but flag it
                 continue
             p = self.params[c]
             s_raw = pd.to_numeric(df[c], errors='coerce')
@@ -473,7 +473,7 @@ def _self_test():
 
     # Inject 1 bad cell (extreme outliers everywhere)
     df_bad = df.copy()
-    df_bad.iloc[3, 2:] = df_bad.iloc[3, 2:].astype(float) * 5.0  # 5× off
+    df_bad.iloc[3, 2:] = df_bad.iloc[3, 2:].astype(float) * 5.0  # 5x off
     out_bad = sc.transform(df_bad)
     flag = flag_bad_cells(out_bad, id_col='Barcode', z_threshold=5.0,
                           extreme_count_threshold=2)

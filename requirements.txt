@@ -2,7 +2,6 @@ numpy>=1.26
 pandas>=2.2
 openpyxl>=3.1
 xlsxwriter>=3.2
-papermill>=2.6
 NewareNDA>=2024.8.0
 xlrd>=2.0
 pyarrow>=15.0

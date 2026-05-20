@@ -1,4 +1,4 @@
-# Battery Data Pipeline
+﻿# Battery Data Pipeline
 
 Manual notebooks and helper modules for turning battery test data into per-cell
 feature tables and per-DOE summary workbooks.
@@ -88,3 +88,4 @@ the pipeline automatically falls back to pickle.
 Do not commit raw cell data, generated workbooks, metadata sheets, `.pkl`,
 `.parquet`, scaler JSONs, or real DOE folders unless they are intentionally
 sanitized examples. The included `.gitignore` blocks those files by default.
+

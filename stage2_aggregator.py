@@ -1,4 +1,4 @@
-﻿"""
+"""
 stage2_aggregator.py
 ====================
 
@@ -703,7 +703,7 @@ def run_stage2(
     if _is_locked(out_xlsx):
         out_xlsx = output_dir / f"stage2_{doe_name}_auto.xlsx"
         if verbose:
-            print(f"[stage2] âš  {doe_name}.xlsx is locked (open in Excel?). "
+            print(f"[stage2] {doe_name}.xlsx is locked (open in Excel?). "
                   f"Writing to {out_xlsx.name} instead.")
 
     color_summary, dir_lookup = build_color_coded_summary(

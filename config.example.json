@@ -4,7 +4,7 @@
   "electrode_area_cm2": 12.5,
   "barcode_regex": null,
   "custom_acr": 80,
-  "stage0": {
+  "manual_inputs": {
     "cycling_output_prefix": null,
     "cycle_map_glob": "*Cycle Map*.xlsx",
     "metadata_glob": "*Metadata*.xlsx"
