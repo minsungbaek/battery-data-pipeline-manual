@@ -1,19 +1,16 @@
 # Battery Data Pipeline
 
-Python tools for turning battery test data into reusable per-cell feature tables
-and per-DOE summary workbooks.
+Manual notebooks and helper modules for turning battery test data into per-cell
+feature tables and per-DOE summary workbooks.
 
-The workflow supports cycling, high-temperature storage, formation, and discharge
-rate-capability data. Stage 0 creates fast `.stage1ready.pkl` caches from raw
-exports where needed. Stage 1 extracts standardized per-cell features. Stage 2
-aggregates cells to lot-level summaries, computes deltas against a baseline lot,
-flags bad cells, and writes Excel plus parquet/pickle outputs.
+This repository is organized around a manual workflow: process each raw test
+type first, then run the Stage 1 + Stage 2 summary notebook.
 
 ## Repository Contents
 
 | File | Purpose |
 | --- | --- |
-| `Single Point DCIR Chart newtry5float_3.ipynb` | Manual cycling NDA processing into Excel and `.stage1ready.pkl`. |
+| `Cycling_Processor.ipynb` | Manual cycling NDA processing into Excel and `.stage1ready.pkl`. |
 | `HT_Storage_Processor.ipynb` | Manual high-temperature storage processing into Excel and `.stage1ready.pkl`. |
 | `Rate_Capability_Processor.ipynb` | Manual rate-capability processing into Excel and `.stage1ready.pkl`. |
 | `stage1_2_pipeline.ipynb` | Manual Stage 1 extraction and Stage 2 DOE summary workflow. |
@@ -29,7 +26,8 @@ flags bad cells, and writes Excel plus parquet/pickle outputs.
 
 ### 1. Cycling
 
-Open `Single Point DCIR Chart newtry5float_3.ipynb` and run it for each cycling test item, such as RT 1C1C, HT 1C1C, HT 1_5C3C, or RT 4C1C.
+Open `Cycling_Processor.ipynb` and run it for each cycling test item, such as
+RT 1C1C, HT 1C1C, HT 1_5C3C, or RT 4C1C.
 
 Expected outputs:
 
@@ -40,7 +38,8 @@ single_test_feature_analysis_*.xlsx
 
 ### 2. HT Storage
 
-Open `HT_Storage_Processor.ipynb` and provide the storage raw-data folders, metadata workbook, and optional thickness/ACR workbook.
+Open `HT_Storage_Processor.ipynb` and provide the storage raw-data folders,
+metadata workbook, and optional thickness/ACR workbook.
 
 Expected outputs:
 
@@ -51,7 +50,8 @@ HT_storage_output.stage1ready.pkl
 
 ### 3. Rate Capability
 
-Open `Rate_Capability_Processor.ipynb` and provide the rate-capability raw NDA folder, metadata workbook, and optional cycle map.
+Open `Rate_Capability_Processor.ipynb` and provide the rate-capability raw NDA
+folder, metadata workbook, and optional cycle map.
 
 Expected outputs:
 
@@ -62,7 +62,9 @@ rate_cap_output.stage1ready.pkl
 
 ### 4. Stage 1 + Stage 2 Summary
 
-Open `stage1_2_pipeline.ipynb` and manually select each test item source workbook. Then run Stage 2 to generate the DOE-level summary workbook and downstream table.
+Open `stage1_2_pipeline.ipynb` and manually select each test item source
+workbook. Then run Stage 2 to generate the DOE-level summary workbook and
+downstream table.
 
 Expected outputs:
 
@@ -78,8 +80,11 @@ stage2_<DOE>.parquet
 python -m pip install -r requirements.txt
 ```
 
-For parquet output, `pyarrow` is recommended. If parquet support is unavailable, the pipeline automatically falls back to pickle.
+For parquet output, `pyarrow` is recommended. If parquet support is unavailable,
+the pipeline automatically falls back to pickle.
 
 ## Public Data Policy
 
-Do not commit raw cell data, generated workbooks, metadata sheets, `.pkl`, `.parquet`, scaler JSONs, or real DOE folders unless they are intentionally sanitized examples. The included `.gitignore` blocks those files by default.
+Do not commit raw cell data, generated workbooks, metadata sheets, `.pkl`,
+`.parquet`, scaler JSONs, or real DOE folders unless they are intentionally
+sanitized examples. The included `.gitignore` blocks those files by default.
